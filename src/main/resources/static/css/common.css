@@ -1,0 +1,12 @@
+.fieldError {
+    border-color: #bd2130;
+}
+.table th {
+    word-break: keep-all;
+}
+.alignRight {
+    text-align: right;
+}
+.alignCenter {
+    text-align: center;
+}
