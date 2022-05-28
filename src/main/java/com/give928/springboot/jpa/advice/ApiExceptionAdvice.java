@@ -1,8 +1,8 @@
 package com.give928.springboot.jpa.advice;
 
-import com.give928.springboot.jpa.exception.dto.ErrorCodeDto;
-import com.give928.springboot.jpa.exception.dto.ErrorMessageDto;
-import com.give928.springboot.jpa.exception.dto.ErrorMessagesDto;
+import com.give928.springboot.jpa.advice.dto.ErrorDto;
+import com.give928.springboot.jpa.advice.dto.ErrorMessageDto;
+import com.give928.springboot.jpa.advice.dto.ErrorMessagesDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -22,35 +22,34 @@ import java.util.stream.Collectors;
 public class ApiExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
-    public ErrorCodeDto handleBindException(BindException e) {
+    public ErrorDto handleBindException(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
         List<ObjectError> allErrors = bindingResult.getAllErrors();
 
         if (allErrors.size() == 1) {
-            return new ErrorMessageDto("BAD_REQUEST", allErrors.get(0).getDefaultMessage());
+            return new ErrorMessageDto(HttpStatus.BAD_REQUEST, allErrors.get(0).getDefaultMessage());
         }
 
         List<String> messages = allErrors.stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-        return new ErrorMessagesDto("BAD_REQUEST", messages);
+        return new ErrorMessagesDto(HttpStatus.BAD_REQUEST, messages);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(RuntimeException.class)
-    public ErrorCodeDto handleRuntimeException(RuntimeException e) {
+    @ExceptionHandler(IllegalStateException.class)
+    public ErrorDto handleIllegalStateException(IllegalStateException e) {
         if (StringUtils.hasText(e.getMessage())) {
-            log.error("[handleRuntimeException]", e);
-            return new ErrorMessageDto("BAD_REQUEST", e.getMessage());
+            log.error("[handleIllegalStateException]", e);
+            return new ErrorMessageDto(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-
         return handleException(e);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
-    public ErrorCodeDto handleException(Exception e) {
+    public ErrorDto handleException(Exception e) {
         log.error("[handleException]", e);
-        return new ErrorMessageDto("INTERNAL_SERVER_ERROR", "서버 내부 오류");
+        return new ErrorMessageDto(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류");
     }
 }
