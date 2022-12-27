@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestControllerAdvice(basePackages = {"com.give928.spring.jpa.api"})
-public class ApiExceptionAdvice {
+@RestControllerAdvice(basePackages = {"com.give928.springboot.jpa.api"})
+public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ErrorDto handleBindException(BindException e) {
